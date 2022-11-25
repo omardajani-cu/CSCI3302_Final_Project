@@ -4,7 +4,7 @@ import math
 
 state = 0 # use this to iterate through your path
 CONTROLLER_GAINS = [3, 10]
-DISTANCE_BOUNDS = 0.3 # if robot is within this distance (in m) then move to next waypoint
+DISTANCE_BOUNDS = 0.3 # 0.3 # if robot is within this distance (in m) then move to next waypoint
 
 def init_autonomous_controller():
     # Part 3.1: Load path from disk and visualize it    
@@ -53,7 +53,7 @@ def ik_controller():
 
     config.vL = vL
     config.vR = vR
-    print("vl, vr = %f, %f" % (config.vL, config.vR) )
+    # print("vl, vr = %f, %f" % (config.vL, config.vR) )
     # Actuator commands
     if rho < DISTANCE_BOUNDS:
         print("------------------ Hit Waypoint ---------------")

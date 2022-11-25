@@ -20,7 +20,7 @@ def manual_mapper():
         alpha = config.lidar_offsets[i]
 
         if rho < config.LIDAR_SENSOR_MAX_RANGE and rho > config.LIDAR_SENSOR_MIN_RANGE:
-            rx = -math.cos(alpha)*rho + 0.202
+            rx = -math.cos(alpha)*rho + 0.202 # offsets are from urdf file base_link_gps(1)_joint
             ry = math.sin(alpha)*rho -0.004
 
             ## Convert detection from robot coordinates into world coordinates
@@ -44,10 +44,3 @@ def manual_mapper():
     draw_x, draw_y = transformation.world_to_map(config.pose_x, config.pose_y)
     display_x, display_y = transformation.map_to_display(draw_x, draw_y)
     config.display.drawPixel(display_x, display_y)
-
-
-
-
-
-            
-      

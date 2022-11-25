@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import transformation
 from scipy.signal import convolve2d
 
-
 # Adapted pseudocode from https://en.wikipedia.org/wiki/A*_search_algorithm
 def h_score(n, goal):
     distance = np.linalg.norm(np.array(n) - np.array(goal))
@@ -86,37 +85,40 @@ def a_star(map, start, end):
     print("Could not find path")
     exit(0)
 
-def create_configuration_space():
+def init_configuration_space():
+    global convolved_m
     m = np.load("map.npy")
     new_map = m > 0.5
     new_map = np.multiply(new_map, 1)  
-    plt.imshow(np.rot90(m))
-    plt.show()
+    # plt.imshow(np.rot90(m))
+    # plt.show()
     convolution = np.full((config.C_SPACE_DIM,config.C_SPACE_DIM), 1)
     convolved_m = convolve2d(m, convolution, mode="same")
     convolved_m = convolved_m > 0
     convolved_m = np.multiply(convolved_m, 1)
-    plt.imshow(np.rot90(convolved_m))
-    plt.show()
-    return convolved_m
+    # plt.imshow(np.rot90(convolved_m))
+    # plt.show()
 
 def plan_path():
-    convolved_m = create_configuration_space()
     # Part 2.3 continuation: Call path_planner
-    print(convolved_m)
-    map_start = transformation.world_to_map(config.start[0], config.start[1])
-    map_end = transformation.world_to_map(config.end[0], config.end[1])
-    map_waypoints = a_star(convolved_m, map_start, map_end)
-    
-    # Part 2.4: Turn paths into waypoints and save on disk as path.npy and visualize it    
+    # print(convolved_m)
+    ## plan path from start --> end
+    # map_start = transformation.world_to_map(config.start[0], config.start[1])
+    # map_end = transformation.world_to_map(config.end[0], config.end[1])
     world_waypoints = []
-    for m in map_waypoints:
-        wx, wy = transformation.map_to_world(m[0], m[1])
-        world_waypoints.append((wx,wy))
-    
+    for i in range(len(config.CHECKPOINTS) - 1):
+        map_start = transformation.world_to_map(config.CHECKPOINTS[i][0], config.CHECKPOINTS[i][1])
+        map_end = transformation.world_to_map(config.CHECKPOINTS[i+1][0], config.CHECKPOINTS[i+1][1])
+        map_waypoints = a_star(convolved_m, map_start, map_end)
+        
+        # Part 2.4: Turn paths into waypoints and save on disk as path.npy and visualize it    
+        for m in map_waypoints:
+            wx, wy = transformation.map_to_world(m[0], m[1])
+            world_waypoints.append((wx,wy))
+        
     np.save("path.npy", world_waypoints)
         
-    for m in map_waypoints:
-        convolved_m[m] = 3
-    plt.imshow(np.rot90(convolved_m))
-    plt.show()
+    # for m in map_waypoints:
+    #     convolved_m[m] = 3
+    # plt.imshow(np.rot90(convolved_m))
+    # plt.show()
