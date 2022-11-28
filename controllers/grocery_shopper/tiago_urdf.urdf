@@ -895,7 +895,7 @@
     <child link="arm_4_link"/>
     <axis xyz="0.000004 0.000003 1"/>
     <limit effort="26" lower="-0.32" upper="2.29" velocity="2.35"/>
-    <origin xyz="-0.02 -0.027 -0.2197" rpy="1.570909 -1.5318 3.141483"/>
+    <origin xyz="-0.02 -0.027 -0.2197" rpy="1.570909 -1.531801 3.141483"/>
   </joint>
   <link name="arm_4_link">
     <visual>

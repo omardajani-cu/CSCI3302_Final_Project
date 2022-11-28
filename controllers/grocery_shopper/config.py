@@ -89,7 +89,7 @@ def robot_init():
             motors.append(motor) 
 
     global DEFAULT_MANIPULATOR_POSITION, BASKET_MANIPULATOR_POSITION
-    DEFAULT_MANIPULATOR_POSITION = [1,1,1]
+    DEFAULT_MANIPULATOR_POSITION = [1,1,0]
 
 
 

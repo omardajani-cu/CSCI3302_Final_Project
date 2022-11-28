@@ -31,8 +31,15 @@ def manual_mapper():
             if config.probability_map[map_x, map_y] > 1:
                 config.probability_map[map_x, map_y] = 1 
                 
-            g = config.probability_map[map_x, map_y] 
-            color = int((g*256**2 + g*256+g)*255)
+            # g = config.probability_map[map_x, map_y] 
+            # color = int((g*256**2 + g*256+g)*255)
+            # config.display.setColor(color)
+
+
+            g = int(config.probability_map[map_x, map_y])*255
+            color = int(g*256**2+g*256+g)
+            if color > 0xffffff:
+                color = int(0xffffff)
             config.display.setColor(color)
 
             display_x, display_y = transformation.map_to_display(map_x, map_y)

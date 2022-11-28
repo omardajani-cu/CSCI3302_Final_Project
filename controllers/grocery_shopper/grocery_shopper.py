@@ -26,10 +26,10 @@ planner.init_configuration_space()
 planner.plan_path()
 controls.init_autonomous_controller()
 manipulator.goto_position(config.DEFAULT_MANIPULATOR_POSITION)
-helpers.wait(100)
-manipulator.goto_position([-0.2,0.5,0.7])
+# helpers.wait(100)
+# manipulator.goto_position([-0.2,0.5,0.7])
 
-config.stopping_condition = 2
+# config.stopping_condition = 2
 # Main Loop
 while config.robot.step(config.timestep) != -1:
     if config.stopping_condition == 0:
