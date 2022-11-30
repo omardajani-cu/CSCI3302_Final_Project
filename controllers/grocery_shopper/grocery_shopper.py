@@ -5,12 +5,11 @@ Description: This file contains the main thread of execution.
 
 import config
 import mapping
-import manipulator
 import controls
 import planner
 import detection
 import helpers
-
+import manipulator
 # Initialization
 print("=== Initializing Grocery Shopper...")
 config.init()
@@ -25,10 +24,10 @@ mode = 'autonomous'
 planner.init_configuration_space()
 planner.plan_path()
 controls.init_autonomous_controller()
-manipulator.goto_position(config.DEFAULT_MANIPULATOR_POSITION)
-# helpers.wait(100)
-# manipulator.goto_position([-0.2,0.5,0.7])
 
+manipulator.initManipulator()
+manipulator.setMotors(manipulator.DEFAULT_MANIPULATOR_ENCODING)
+helpers.wait(100)
 # config.stopping_condition = 2
 # Main Loop
 while config.robot.step(config.timestep) != -1:
@@ -48,7 +47,7 @@ while config.robot.step(config.timestep) != -1:
             controls.ik_controller()
 
     elif config.stopping_condition == 1:
-        manipulator.perform_ik_from_cam()
+        # manipulator.perform_ik_from_cam()
         config.stopping_condition = 2
 
     elif config.stopping_condition == 2:

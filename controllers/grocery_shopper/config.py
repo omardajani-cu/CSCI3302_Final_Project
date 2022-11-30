@@ -62,34 +62,6 @@ def robot_init():
     gripper_status="closed"
 
 
-    # https://gist.github.com/ItsMichal/4a8fcb330d04f2ccba582286344dd9a7
-    with open("tiago_urdf.urdf", "w") as file:  
-        file.write(robot.getUrdf())
-
-    global my_chain
-    my_chain = Chain.from_urdf_file("tiago_urdf.urdf", last_link_vector=[0.012365, 0, -0.1741],
-                                    base_elements=["base_link", "base_link_Torso_joint", "Torso", "torso_lift_joint", "torso_lift_link", "torso_lift_link_TIAGo front arm_joint", "TIAGo front arm"],
-                                    active_links_mask=[False, False, True, False, True, True ,True ,True ,True ,True ,True , False ,False ,False ,False])
-
-    
-    print(my_chain.links)
-    # Initialize the arm motors and encoders.
-    global motors
-    motors = []
-    for link in my_chain.links:
-        if link.name in part_names and link.name != "torso_lift_joint" and link.name != "gripper_left_finger_joint" and link.name != "gripper_right_finger_joint":
-            motor = robot.getDevice(link.name)
-            if link.name == "torso_lift_joint":
-                motor.setVelocity(0.07)
-            else:
-                motor.setVelocity(1)
-                
-            position_sensor = motor.getPositionSensor()
-            position_sensor.enable(timestep)
-            motors.append(motor) 
-
-    global DEFAULT_MANIPULATOR_POSITION, BASKET_MANIPULATOR_POSITION
-    DEFAULT_MANIPULATOR_POSITION = [1,1,0]
 
 
 
@@ -145,6 +117,8 @@ def lidar_init():
     lidar_offsets = lidar_offsets[83:len(lidar_offsets)-83] # Only keep lidar readings not blocked by robot chassis
 
 
+
+
 def map_init():
     global WORLD_DIM, MAP_DIM, C_SPACE_DIM
     C_SPACE_DIM = 5 # 5
@@ -162,7 +136,14 @@ def map_init():
     waypoints = []
 
     global CHECKPOINTS
-    CHECKPOINTS = [start, (-2.34, 2.9)]
+    goal_item_locations = [(2.34093,-3.53)]
+    robot_item_locations = []
+    for loc in goal_item_locations:
+        robot_item_locations.append((-1*loc[0], -1*(loc[1] + 0.75))) # CHANGE THIS FOR OTHER ISLE
+    CHECKPOINTS = [start, robot_item_locations[0]]
+    # add checkpoints for every yellow item
+    
+
 
 def pose_init():
     global pose_x, pose_y, pose_theta, vL, vR, stopping_condition
