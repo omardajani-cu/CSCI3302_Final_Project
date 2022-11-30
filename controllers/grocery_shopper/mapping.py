@@ -10,8 +10,26 @@ def get_gps_update():
     n = config.compass.getValues()
     config.pose_theta = ((math.atan2(n[0], n[1])))
 
+    # print("(%f, %f, %f)" % (config.pose_x, config.pose_y, config.pose_theta))
+
+
+def get_odometry_update():
+    config.pose_x -= (config.vL+config.vR)/2/config.MAX_SPEED*config.MAX_SPEED_MS*config.timestep/1000.0*math.cos(config.pose_theta)
+    config.pose_y += (config.vL+config.vR)/2/config.MAX_SPEED*config.MAX_SPEED_MS*config.timestep/1000.0*math.sin(config.pose_theta)
+    config.pose_theta += (config.vR-config.vL)/config.AXLE_LENGTH/config.MAX_SPEED*config.MAX_SPEED_MS*config.timestep/1000.0
+
+    if config.pose_theta > 3.14:
+        config.pose_theta -= 6.28
+    if config.pose_theta < -3.14:
+        config.pose_theta += 6.28
+
+    # print("(%f, %f, %f)" % (config.pose_x, config.pose_y, config.pose_theta))
+
 def manual_mapper():
-    get_gps_update()
+    get_odometry_update()
+    x,y,z = config.pose_x, config.pose_y, config.pose_theta
+    get_gps_update() 
+    print("(%f, %f, %f)" % (config.pose_x - x, config.pose_y - y, config.pose_theta - z))
 
     config.lidar_sensor_readings = config.lidar.getRangeImage()
     config.lidar_sensor_readings = config.lidar_sensor_readings[83:len(config.lidar_sensor_readings)-83]

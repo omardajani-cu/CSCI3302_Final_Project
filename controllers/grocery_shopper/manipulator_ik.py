@@ -69,7 +69,7 @@ def init_manipulator():
 
     ax = matplotlib.pyplot.figure().add_subplot(111, projection='3d')
     initpos = [0,0,0,0] + [m.getPositionSensor().getValue() for m in motors] + [0,0,0,0]
-    my_chain.plot(my_chain.inverse_kinematics([1,1,1], initial_position = initpos), ax)
+    my_chain.plot(my_chain.inverse_kinematics([1,0,0], initial_position = initpos), ax)
     matplotlib.pyplot.show()
 
 

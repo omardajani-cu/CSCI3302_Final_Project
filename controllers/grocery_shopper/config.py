@@ -143,15 +143,16 @@ def map_init():
     CHECKPOINTS = [start, robot_item_locations[0]]
     # add checkpoints for every yellow item
     
+    
 
 
 def pose_init():
     global pose_x, pose_y, pose_theta, vL, vR, stopping_condition
 
     # Odometry
-    pose_x     = 0
-    pose_y     = 0
-    pose_theta = 0
+    pose_x     = 5.0
+    pose_y     = 0.00338677
+    pose_theta = 0.0
 
     vL = 0
     vR = 0

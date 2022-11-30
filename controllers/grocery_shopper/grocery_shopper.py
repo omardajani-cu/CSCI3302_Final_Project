@@ -10,11 +10,10 @@ import planner
 import detection
 import helpers
 import manipulator
+import manipulator_ik
 # Initialization
 print("=== Initializing Grocery Shopper...")
 config.init()
-
-
 
 
 #mode = 'manual' # Part 1.1: manual mode
@@ -25,8 +24,13 @@ planner.init_configuration_space()
 planner.plan_path()
 controls.init_autonomous_controller()
 
-manipulator.initManipulator()
-manipulator.setMotors(manipulator.DEFAULT_MANIPULATOR_ENCODING)
+manipulator_ik.init_manipulator()
+manipulator_ik.goto_position([1,1,1])
+helpers.wait(100)
+manipulator_ik.goto_position([1,0,0])
+
+# manipulator.initManipulator()
+# manipulator.setMotors(manipulator.DEFAULT_MANIPULATOR_ENCODING)
 helpers.wait(100)
 # config.stopping_condition = 2
 # Main Loop
