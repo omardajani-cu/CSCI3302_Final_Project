@@ -136,7 +136,8 @@ def map_init():
     waypoints = []
 
     global CHECKPOINTS
-    goal_item_locations = [(2.34093,-3.53)]
+    goal_item_locations = [(3.51, 3.59), (3.5, 7.17), (11.6, -7.82), (-1.33, -4.05), (2.41, -3.53), (-0.718, 0.36), (-2.7, 0.31), (0.93, 0.37), (-2.66, 0.2), (-2.65, 3.63), (5.87, 7.16)]
+    (2.69, 3.59, 0.76)
     robot_item_locations = []
     for loc in goal_item_locations:
         robot_item_locations.append((-1*loc[0], -1*(loc[1] + 0.75))) # CHANGE THIS FOR OTHER ISLE
