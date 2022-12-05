@@ -1,4 +1,4 @@
-"""grocery controller."""
+"""grocery controller.latest"""
 
 # Nov 2, 2022
 
@@ -7,6 +7,11 @@ import math
 import numpy as np
 from matplotlib import pyplot as plt
 from scipy.signal import convolve2d
+
+import pdb
+import pickle
+import random
+import copy
 
 #Initialization
 print("=== Initializing Grocery Shopper...")
@@ -131,8 +136,93 @@ probability_map = np.empty(MAP_DIM)
 
 gripper_status="closed"
 
+color_ranges = [[[224, 224, 0], [253, 253, 150]]]
+
+def check_if_color_in_range(bgr_tuple):
+    global color_ranges
+    for entry in color_ranges:
+        lower, upper = entry[0], entry[1]
+        in_range = True
+        for i in range(len(bgr_tuple)):
+            if bgr_tuple[i] < lower[i] or bgr_tuple[i] > upper[i]:
+                in_range = False
+                break
+        if in_range: return True
+    return False
+
+def do_color_filtering(img):
+    img_height = img.shape[0]
+    img_width = img.shape[1]
+
+    mask = np.zeros([img_height, img_width])
+    for y in range(img_height):
+        for x in range(img_width):
+            if check_if_color_in_range(img[y][x]) == True:
+                print("detected yellow")
+                mask[y][x] = 1
+            else:
+                # print("no", img[y][x])
+                mask[y][x] = 0
+    return mask
+    
+def get_blobs(img_mask):
+    img_mask_height = img_mask.shape[0]
+    img_mask_width = img_mask.shape[1]
+
+    img_mask_copy = copy.copy(img_mask)
+    blobs_list = []
+
+    for y in range(img_mask_height):
+        for x in range(img_mask_width):
+            if img_mask[y][x] == 1:
+                blob_coords = expand_nr(img_mask_copy, [y,x], [])
+                blobs_list.append(blob_coords)
+    return blobs_list
+    
+def get_blob_centroids(blobs_list):
+    object_positions_list = []
+
+    for blob in blobs_list:
+        if len(blob) >= 700:
+            object_positions_list.append(np.mean(blob, axis=0))
+  
+    return object_positions_list
+    
+def expand_nr(img_mask, cur_coord, coordinates_in_blob):
+    coordinates_in_blob = []
+    coordinate_list = [cur_coord] # List of all coordinates to try expanding to
+    while len(coordinate_list) > 0:
+        cur_coordinate = coordinate_list.pop() # Take the first coordinate in the list and perform 'expand' on it
+        if cur_coordinate[0] < 0 or cur_coordinate[1] < 0 or cur_coordinate[0] >= img_mask.shape[0] or cur_coordinate[1] >= img_mask.shape[1]: 
+            continue
+        if img_mask[cur_coordinate[0], cur_coordinate[1]] == 0.0: 
+            continue
+
+        img_mask[cur_coordinate[0],cur_coordinate[1]] = 0
+        coordinates_in_blob.append([cur_coordinate[0],cur_coordinate[1]])
+        above = [cur_coordinate[0]-1, cur_coordinate[1]]
+        below = [cur_coordinate[0]+1, cur_coordinate[1]]
+        left = [cur_coordinate[0], cur_coordinate[1]-1]
+        right = [cur_coordinate[0], cur_coordinate[1]+1]
+        for coord in [above, below, left, right]: 
+            coordinate_list.append(coord)
+    
+
+    return coordinates_in_blob
+printed = False
 # Main Loop
 while robot.step(timestep) != -1:
+    image = camera.getImageArray()
+    if image:
+        img_mask = do_color_filtering(np.array(image))
+        # if printed == False:
+            # with np.printoptions(threshold=np.inf):
+                # print(img_mask)
+            # printed = True
+        blobs = get_blobs(img_mask)
+        object_positions_list = get_blob_centroids(blobs)
+        for i in range(len(object_positions_list)):
+            print("pos: ", object_positions_list[i])
     
     
     robot_parts["wheel_left_joint"].setVelocity(vL)
@@ -161,10 +251,10 @@ while robot.step(timestep) != -1:
     pose_y = -gps.getValues()[1]
     pose_x = -gps.getValues()[0]
     
-    print("POSE FROM GPS")
-    print(pose_x, pose_y)
-    print("MAP TRANSLATED POSE")
-    print(world_to_map((pose_x, pose_y)))
+    # print("POSE FROM GPS")
+    # print(pose_x, pose_y)
+    # print("MAP TRANSLATED POSE")
+    # print(world_to_map((pose_x, pose_y)))
 
     n = compass.getValues()
     rad = ((math.atan2(n[0], -n[2])))#-1.5708)
@@ -252,3 +342,4 @@ while robot.step(timestep) != -1:
         else: # slow down
             vL *= 0.75
             vR *= 0.75
+
