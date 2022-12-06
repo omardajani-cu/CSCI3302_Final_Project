@@ -267,10 +267,10 @@ if mode == 'autonomous':
 state = 30 # use this to iterate through your path
 CONTROLLER_GAINS = [3, 10]
 DISTANCE_BOUNDS = 0.3 # if robot is within this distance (in m) then move to next waypoint
-stopping_condition = 0
+robot_state = 0
 
 
-while robot.step(timestep) != -1 and mode != 'planner' and stopping_condition == 0:
+while robot.step(timestep) != -1 and mode != 'planner' and robot_state == 0:
 
     ###################
     #
@@ -426,7 +426,7 @@ while robot.step(timestep) != -1 and mode != 'planner' and stopping_condition ==
             state += STRIDE
             if state >= len(waypoints) - STRIDE:
                 print("++++++++++++++No more waypoints+++++++++++++++++++")
-                stopping_condition = 1 
+                robot_state = 1 
         else:
             print("vL=" + str(vL))
             print("vR=" + str(vR))

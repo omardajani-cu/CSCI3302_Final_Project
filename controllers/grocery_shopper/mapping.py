@@ -14,8 +14,8 @@ def get_gps_update():
 
 
 def get_odometry_update():
-    config.pose_x -= (config.vL+config.vR)/2/config.MAX_SPEED*config.MAX_SPEED_MS*config.timestep/1000.0*math.cos(config.pose_theta)
-    config.pose_y += (config.vL+config.vR)/2/config.MAX_SPEED*config.MAX_SPEED_MS*config.timestep/1000.0*math.sin(config.pose_theta)
+    config.pose_x  -= (config.vL+config.vR)/2/config.MAX_SPEED*config.MAX_SPEED_MS*config.timestep/1000.0*math.cos(config.pose_theta)
+    config.pose_y -= (config.vL+config.vR)/2/config.MAX_SPEED*config.MAX_SPEED_MS*config.timestep/1000.0*math.sin(config.pose_theta)
     config.pose_theta += (config.vR-config.vL)/config.AXLE_LENGTH/config.MAX_SPEED*config.MAX_SPEED_MS*config.timestep/1000.0
 
     if config.pose_theta > 3.14:
@@ -23,14 +23,13 @@ def get_odometry_update():
     if config.pose_theta < -3.14:
         config.pose_theta += 6.28
 
-    # print("(%f, %f, %f)" % (config.pose_x, config.pose_y, config.pose_theta))
+    print("(%f, %f, %f)" % (config.pose_x, config.pose_y, config.pose_theta))
 
-def manual_mapper():
-    get_odometry_update()
-    x,y,z = config.pose_x, config.pose_y, config.pose_theta
-    get_gps_update() 
-    print("(%f, %f, %f)" % (config.pose_x - x, config.pose_y - y, config.pose_theta - z))
+def lidarMapper():
+    get_gps_update()
 
+    # get_odometry_update() 
+    
     config.lidar_sensor_readings = config.lidar.getRangeImage()
     config.lidar_sensor_readings = config.lidar_sensor_readings[83:len(config.lidar_sensor_readings)-83]
     
@@ -48,10 +47,6 @@ def manual_mapper():
             config.probability_map[map_x, map_y] += 5e-3
             if config.probability_map[map_x, map_y] > 1:
                 config.probability_map[map_x, map_y] = 1 
-                
-            # g = config.probability_map[map_x, map_y] 
-            # color = int((g*256**2 + g*256+g)*255)
-            # config.display.setColor(color)
 
 
             g = int(config.probability_map[map_x, map_y])*255

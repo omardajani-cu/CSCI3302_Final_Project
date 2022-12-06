@@ -1,16 +1,19 @@
 import config
 import numpy as np
 import math
-
+import helpers
+import planner
 state = 0 # use this to iterate through your path
 CONTROLLER_GAINS = [3, 10]
 DISTANCE_BOUNDS = 0.3 # 0.3 # if robot is within this distance (in m) then move to next waypoint
 
 def init_autonomous_controller():
     # Part 3.1: Load path from disk and visualize it    
+    global state
+    state = 0
     path = np.load("path.npy").tolist()
     config.waypoints = path
-    print("PATH = " + str(path))
+    # print("PATH = " + str(path))
 
 def ik_controller():
     global state
@@ -53,29 +56,26 @@ def ik_controller():
 
     config.vL = vL
     config.vR = vR
-    # print("vl, vr = %f, %f" % (config.vL, config.vR) )
-    # Actuator commands
+
     if rho < DISTANCE_BOUNDS:
-        print("------------------ Hit Waypoint ---------------")
-        # config.robot_parts[config.MOTOR_LEFT].setVelocity(0)
-        # config.robot_parts[config.MOTOR_RIGHT].setVelocity(0)
-        
+
         state += 1
         if state >= len(config.waypoints) - 1:
-            print("++++++++++++++No more waypoints+++++++++++++++++++")
+            print("++++++++++++++Moving to next checkpoint+++++++++++++++++++")
             config.robot_parts["wheel_left_joint"].setVelocity(0)
             config.robot_parts["wheel_right_joint"].setVelocity(0)
-            config.stopping_condition = 1 
-
+            
+            
+            if config.checkpoint_idx >= len(config.CHECKPOINTS)-2:
+                config.robot_state = config.State.END 
+            else:
+                config.checkpoint_idx += 1
+                config.robot_state = config.State.REROUTING
 
 def manual_controller():
-        ###################
-    #
-    # Controller
-    #
-    ###################
-    new_max = config.MAX_SPEED
+    new_max = config.MAX_SPEED/2
     key = config.keyboard.getKey()
+    # print("key " + str(key))
     while(config.keyboard.getKey() != -1): pass
     if key == config.keyboard.LEFT :
         config.vL = -new_max
@@ -92,14 +92,33 @@ def manual_controller():
     elif key == ord(' '):
         config.vL = 0
         config.vR = 0
-    elif key == ord('S'):
-        # Part 1.4: Filter map and save to filesystem          
-        np.save("map.npy",config.probability_map)
-        print("Map file saved")
-    elif key == ord('L'):
-        # You will not use this portion in Part 1 but here's an example for loading saved a numpy array
-        config.map = np.load("map.npy")
-        print("Map loaded")
+
+    elif key == ord('Q') and config.robot_state == config.State.MAPPING:
+        helpers.get_gps_update()
+        config.pts.append([config.pose_x, config.pose_y, config.pose_theta])
+        print("point saved")
+
+    elif key == ord('M'):
+        print("Going back to arm manipulation")
+        config.robot_state = config.State.GRABBING
+
+    elif key == ord('P'):
+        if config.robot_state == config.State.MAPPING:
+            # You will not use this portion in Part 1 but here's an example for loading saved a numpy array
+            print("Beginning autonomous navigation")
+            mypath = config.pts
+            # get rid of duplicate checkpoints
+            res = []
+            [res.append(x) for x in mypath if x not in res]
+            config.CHECKPOINTS = res
+            np.save("map.npy",config.probability_map)
+            planner.init_configuration_space()
+            config.robot_state = config.State.REROUTING
+        else:
+            print("Restarting autonomous navigation")
+            planner.init_configuration_space()
+            config.robot_state = config.State.REROUTING
+
     else: # slow down
         config.vL *= 0.75
         config.vR *= 0.75

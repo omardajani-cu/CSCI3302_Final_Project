@@ -406,7 +406,7 @@
   <joint name="base_link_plastic crate(1)_joint" type="fixed">
     <parent link="base_link"/>
     <child link="plastic crate(1)"/>
-    <origin xyz="0.372 -0.01 0.236" rpy="1.570791 -0.000005 -3.141587"/>
+    <origin xyz="0.272 -0.010001 0.236" rpy="1.570798 -0.000005 1.570798"/>
   </joint>
   <link name="Hokuyo URG-04LX-UG01">
     <visual>
@@ -440,6 +440,73 @@
     <parent link="base_link"/>
     <child link="compass"/>
     <origin xyz="0.202 0 -0.004" rpy="0 0 0"/>
+  </joint>
+  <link name="plastic crate">
+    <visual>
+      <origin xyz="0 0.0035 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.6 0.01 0.4"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0.0035 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.6 0.01 0.4"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0.2895 0.1035 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.021 0.193 0.372"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0.2895 0.1035 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.021 0.193 0.372"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="-0.2895 0.1035 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.021 0.193 0.372"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="-0.2895 0.1035 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.021 0.193 0.372"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 0.1035 0.193" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.6 0.193 0.021"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0.1035 0.193" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.6 0.193 0.021"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 0.1035 -0.193" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.6 0.193 0.021"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0.1035 -0.193" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.6 0.193 0.021"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="base_link_plastic crate_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="plastic crate"/>
+    <origin xyz="0.272 -0.010001 0.236" rpy="1.570798 -0.000005 1.570798"/>
   </joint>
   <link name="Torso">
     <visual>
