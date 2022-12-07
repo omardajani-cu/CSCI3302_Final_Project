@@ -1,33 +1,39 @@
+"""
+Name: controls.py
+Description: Manual and autonomous controller
+"""
+
 import config
 import numpy as np
 import math
 import helpers
 import planner
-state = 0 # use this to iterate through your path
+
+state = 0 # iterator index through path
 CONTROLLER_GAINS = [3, 10]
 DISTANCE_BOUNDS = 0.3 # 0.3 # if robot is within this distance (in m) then move to next waypoint
 
 def init_autonomous_controller():
-    # Part 3.1: Load path from disk and visualize it    
+    # Load path from disk   
     global state
     state = 0
     path = np.load("path.npy").tolist()
     config.waypoints = path
-    # print("PATH = " + str(path))
+
 
 def ik_controller():
     global state
     vL, vR = config.vL, config.vR
-    # Part 3.2: Feedback controller
-    #STEP 1: Calculate the error
+
+    # error terms
     rho = math.sqrt(math.pow(config.pose_x-config.waypoints[state][0],2) + math.pow(config.pose_y-config.waypoints[state][1],2))
     alpha = (math.atan2(config.pose_y-config.waypoints[state][1],config.pose_x-config.waypoints[state][0]) - config.pose_theta)
-    
-    #STEP 2: Controller
+
+    # Controller
     d_x = CONTROLLER_GAINS[0]*rho
     d_theta = CONTROLLER_GAINS[1]*alpha
     
-    #STEP 3: Compute wheelspeeds
+    # Compute wheelspeeds
     vL = (d_x - (d_theta*config.AXLE_LENGTH*0.5))
     vR = (d_x + (d_theta*config.AXLE_LENGTH*0.5))
 
@@ -57,17 +63,19 @@ def ik_controller():
     config.vL = vL
     config.vR = vR
 
+    # once it reaches waypoints, go to next waypoint
     if rho < DISTANCE_BOUNDS:
-
         state += 1
         if state >= len(config.waypoints) - 1:
             print("++++++++++++++Moving to next checkpoint+++++++++++++++++++")
             config.robot_parts["wheel_left_joint"].setVelocity(0)
             config.robot_parts["wheel_right_joint"].setVelocity(0)
             
-            
+            # ran out of checkpoints, end of execution
             if config.checkpoint_idx >= len(config.CHECKPOINTS)-2:
                 config.robot_state = config.State.END 
+
+            # moving to next checkpoint
             else:
                 config.checkpoint_idx += 1
                 config.robot_state = config.State.REROUTING

@@ -1,3 +1,8 @@
+"""
+Name: config.py
+Description: Initializes robot, sensor, mapping states and defines global constants and other global variables
+"""
+
 import config
 import ikpy.chain
 import numpy as np

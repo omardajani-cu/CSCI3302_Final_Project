@@ -1,3 +1,8 @@
+"""
+Name: config.py
+Description: Initializes robot, sensor, mapping states and defines global constants and other global variables
+"""
+
 import config
 import math
 
@@ -32,4 +37,3 @@ def get_gps_update():
     n = config.compass.getValues()
     config.pose_theta = ((math.atan2(n[0], n[1])))
 
-    # print("(%f, %f, %f)" % (config.pose_x, config.pose_y, config.pose_theta))

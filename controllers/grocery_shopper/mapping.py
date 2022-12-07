@@ -1,7 +1,13 @@
+"""
+Name: config.py
+Description: Initializes robot, sensor, mapping states and defines global constants and other global variables
+"""
+
 # mapping functionality for robot
 import config
 import transformation
 import math
+import trilateration
 
 
 def get_gps_update():

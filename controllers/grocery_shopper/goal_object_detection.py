@@ -1,3 +1,8 @@
+"""
+Name: config.py
+Description: Initializes robot, sensor, mapping states and defines global constants and other global variables
+"""
+
 # https://github.com/lukicdarkoo/webots-example-visual-tracking/blob/master/controllers/visual_tracker/visual_tracker.py
 import config
 import numpy as np
@@ -9,7 +14,6 @@ def get_image_from_camera():
 
     img = config.camera.getImageArray()
     img = np.asarray(img, dtype=np.uint8)
-    # img = cv2.cvtColor(img, cv2.COLOR_BGRA2RGB)
     img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
     img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
     return cv2.flip(img, 1)

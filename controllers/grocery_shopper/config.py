@@ -2,15 +2,15 @@
 Name: config.py
 Description: Initializes robot, sensor, mapping states and defines global constants and other global variables
 """
+
 from controller import Robot, Motor, Camera, RangeFinder, Lidar, Keyboard
-import ikpy.chain
 import numpy as np
-from ikpy.chain import Chain
-from ikpy.link import OriginLink, URDFLink
 import numpy as np
 import math
 from enum import Enum
 
+
+# defines robot state for main controller
 class State(Enum):
     START = 0
     MAPPING = 1
@@ -20,6 +20,7 @@ class State(Enum):
     REPOSITIONING = 5
     END = 6
 
+# initializes robot manipulators
 def robot_init():
     global MAX_SPEED, MAX_SPEED_MS, AXLE_LENGTH, MOTOR_LEFT, MOTOR_RIGHT, N_PARTS, WHEEL_RADIUS
     MAX_SPEED = 7.0  # [rad/s]
@@ -44,24 +45,19 @@ def robot_init():
     for part_name in part_names:
         robot_parts[part_name]=robot.getDevice(part_name)
 
-    # may not need here
     robot_parts["torso_lift_joint"].setPosition(0.0)
     robot_parts["torso_lift_joint"].getPositionSensor().enable(timestep)
-
     robot_parts["wheel_left_joint"].setPosition(math.inf)
     robot_parts["wheel_left_joint"].setVelocity(0.0)
     robot_parts["wheel_right_joint"].setPosition(math.inf)
     robot_parts["wheel_right_joint"].setVelocity(0.0)
             
-
     robot_parts["gripper_left_finger_joint"].setPosition(0.045)
     robot_parts["gripper_left_finger_joint"].setVelocity(robot_parts["gripper_left_finger_joint"].getMaxVelocity()/2.0)
 
     robot_parts["gripper_right_finger_joint"].setPosition(0.045)
     robot_parts["gripper_right_finger_joint"].setVelocity(robot_parts["gripper_right_finger_joint"].getMaxVelocity()/2.0)
         
-    
-
     # Enable gripper encoders (position sensors)
     left_gripper_enc=robot.getDevice("gripper_left_finger_joint_sensor")
     right_gripper_enc=robot.getDevice("gripper_right_finger_joint_sensor")
@@ -69,8 +65,7 @@ def robot_init():
     right_gripper_enc.enable(timestep)
     gripper_status="closed"
 
-
-
+# initializes sensors (except for lidar sensors)
 def sensor_init():
     global camera, gps, compass, display, keyboard
 
@@ -89,17 +84,14 @@ def sensor_init():
     display = robot.getDevice("display")
 
     # Enable Keyboard
-    # We are using a keyboard to remote control the robot
     keyboard = robot.getKeyboard()
     keyboard.enable(timestep)
 
 
-
+# initializes lidar sensor for obstacle detection in mapping word. Our group has modified the initial position of this sensor to higher on the robot to avoid messy observations of the floor
 def lidar_init():
     global lidar_sensor_readings, lidar_offsets, lidar
 
-    # Enable LiDAR
-    # lidar = robot.getDevice('Hokuyo URG-04LX-UG01')
     lidar = robot.getDevice('onboard_lidar_1')
     lidar.enable(timestep)
     lidar.enablePointCloud()
@@ -116,12 +108,13 @@ def lidar_init():
     lidar_offsets = np.linspace(-LIDAR_ANGLE_RANGE/2., +LIDAR_ANGLE_RANGE/2., LIDAR_ANGLE_BINS)
     lidar_offsets = lidar_offsets[83:len(lidar_offsets)-83] # Only keep lidar readings not blocked by robot chassis
 
-
+# init map parameters
 def map_init():
     global WORLD_DIM, MAP_DIM, C_SPACE_DIM
-    C_SPACE_DIM = 5 # 5
+    # convolution size to increase boundaries for configuration space
+    C_SPACE_DIM = 5
     MAP_DIM = (161,300)
-    WORLD_DIM = (30,16.1) # without walls
+    WORLD_DIM = (30,16.1)
     
     global map, probability_map
     map = np.empty(MAP_DIM)
@@ -129,17 +122,17 @@ def map_init():
 
     # for path planning
     global start, end, waypoints
-    start = (5,0) # (Pose_X, Pose_Z) in meters
-    end = (-1.5,1.7) # (Pose_X, Pose_Z) in meters
+    # start = (5,0) # (Pose_X, Pose_Z) in meters
+    # end = (-1.5,1.7) # (Pose_X, Pose_Z) in meters
     waypoints = []
 
     global CHECKPOINTS, checkpoint_idx
     checkpoint_idx = 0
-    goal_item_locations = [(3.51, 3.59), (3.5, 7.17), (11.6, -7.82), (-1.33, -4.05), (2.41, -3.53), (-0.718, 0.36), (-2.7, 0.31), (0.93, 0.37), (-2.66, 0.2), (-2.65, 3.63), (5.87, 7.16)]
-    # (2.69, 3.59, 0.76)
-    robot_item_locations = []
-    for loc in goal_item_locations:
-        robot_item_locations.append((-1*loc[0], -1*(loc[1] + 0.75))) # CHANGE THIS FOR OTHER ISLE
+
+    # goal_item_locations = [(3.51, 3.59), (3.5, 7.17), (11.6, -7.82), (-1.33, -4.05), (2.41, -3.53), (-0.718, 0.36), (-2.7, 0.31), (0.93, 0.37), (-2.66, 0.2), (-2.65, 3.63), (5.87, 7.16)]
+    # robot_item_locations = []
+    # for loc in goal_item_locations:
+    #     robot_item_locations.append((-1*loc[0], -1*(loc[1] + 0.75))) # CHANGE THIS FOR OTHER ISLE
     
     global pts 
     pts = []
@@ -148,7 +141,6 @@ def map_init():
 def pose_init():
     global pose_x, pose_y, pose_theta, vL, vR, robot_state
 
-    # Odometry
     pose_x     = 5.0
     pose_y     = 0.0
     pose_theta = 0.0
@@ -158,6 +150,8 @@ def pose_init():
 
     robot_state = State.START
 
+
+# main initialization function
 def init():
     robot_init()
     sensor_init()

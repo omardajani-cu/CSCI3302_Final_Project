@@ -10,6 +10,7 @@ import planner
 import helpers
 import manipulator_ik
 import goal_object_detection
+import trilateration
 import numpy as np
 
 
@@ -20,6 +21,7 @@ config.init()
 if config.robot_state == config.State.START:
     manipulator_ik.initManipulator()
     manipulator_ik.goto_position(manipulator_ik.DEFAULT_MANIPULATOR_POSITION)
+    trilateration.enableSLAMLidar()
     
     print("PRESS 1 to begin manually mapping, 2 to use default points")
     while config.robot.step(config.timestep) != -1:
@@ -54,6 +56,7 @@ while config.robot.step(config.timestep) != -1:
 
         controls.manual_controller()
         mapping.lidarMapper()
+        trilateration.getTrilaterationUpdate()
         
 
     elif config.robot_state == config.State.NAVIGATING:
