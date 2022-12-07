@@ -1,17 +1,17 @@
 """
-Name: config.py
-Description: Initializes robot, sensor, mapping states and defines global constants and other global variables
+Name: goal_object_detection.py
+Description: Detects yellow blobs using cv libaries
 """
 
-# https://github.com/lukicdarkoo/webots-example-visual-tracking/blob/master/controllers/visual_tracker/visual_tracker.py
 import config
 import numpy as np
 import cv2
 
+# add a checkpoint for images with this threshold of color
 COLOR_THRESHOLD = 1000
 
+# convert webots image to opencv usable image
 def get_image_from_camera():
-
     img = config.camera.getImageArray()
     img = np.asarray(img, dtype=np.uint8)
     img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
@@ -26,10 +26,10 @@ def getCenter(largest_contour):
     center_x = int(a/b)
     return center_x
 
+# detect yellow color using the findContours function, find the center of the largest "blob" of yellow and find area of largest yellow blob
 def colorDetection():
     img = get_image_from_camera()
 
-    # Segment the image by color in HSV color space
     img = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
     mask = cv2.inRange(img, np.array([0, 100, 100]), np.array([30, 255, 255]))
 
@@ -38,7 +38,6 @@ def colorDetection():
     if len(contours) != 0:
         largest_contour = max(contours, key=cv2.contourArea)
         area_contour = cv2.contourArea(largest_contour) 
-        # print("image detected, area is: " + str(area_contour))
         if (area_contour > COLOR_THRESHOLD):
             center = getCenter(largest_contour)
             print("Center is: " + str(center))

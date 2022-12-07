@@ -8,7 +8,7 @@ import mapping
 import controls
 import planner
 import helpers
-import manipulator_ik
+import manipulator
 import goal_object_detection
 import trilateration
 import numpy as np
@@ -18,9 +18,11 @@ import numpy as np
 print("--> Initializing Grocery Shopper <--")
 config.init()
 
+# execution is just starting, choose to manually map or use an existing map that was created in a previous thread of execution
 if config.robot_state == config.State.START:
-    manipulator_ik.initManipulator()
-    manipulator_ik.goto_position(manipulator_ik.DEFAULT_MANIPULATOR_POSITION)
+    manipulator.initManipulator()
+    # use inverse kinematics to make arm goto a position that will not interfere with obstacle lidar detector
+    manipulator.goto_position(manipulator.DEFAULT_MANIPULATOR_POSITION)
     trilateration.enableSLAMLidar()
     
     print("PRESS 1 to begin manually mapping, 2 to use default points")
@@ -33,7 +35,9 @@ if config.robot_state == config.State.START:
             break
         elif key == ord('2'):
             print("SETTING STATE TO ROUTING")
-            mypath = np.load("path.npy").tolist()
+
+            # load path and set checkpoints to path
+            mypath = np.load("checkpoints.npy").tolist()
             # get rid of duplicate checkpoints
             res = []
             [res.append(x) for x in mypath if x not in res]
@@ -45,8 +49,9 @@ if config.robot_state == config.State.START:
 # Main Loop
 while config.robot.step(config.timestep) != -1:
 
+    # user manually controls robot to map out facility
     if config.robot_state == config.State.MAPPING:
-        # goal object was detected, add checkpoint          
+        # goal object was detected over a certain size using color blob detection, then add checkpoint so we can stop there when autonomously navigating          
         if goal_object_detection.colorDetection() == 1:
             helpers.get_gps_update()
             config.pts.append([config.pose_x, config.pose_y, config.pose_theta])
@@ -55,10 +60,12 @@ while config.robot.step(config.timestep) != -1:
         config.robot_parts["wheel_right_joint"].setVelocity(config.vR)
 
         controls.manual_controller()
+        # show position from lidar mesasurments and add obstacles to map
         mapping.lidarMapper()
+        # show position obtained from trilateration
         trilateration.getTrilaterationUpdate()
         
-
+    # robot is using differential drive IK to autonomously navigate between points
     elif config.robot_state == config.State.NAVIGATING:
         goal_object_detection.colorDetection()
 
@@ -78,6 +85,7 @@ while config.robot.step(config.timestep) != -1:
             config.robot_parts["wheel_left_joint"].setVelocity(config.vL)
             config.robot_parts["wheel_right_joint"].setVelocity(config.vR)
 
+    # robot is replanning route from current position and destinaiton
     elif config.robot_state == config.State.REROUTING:
         planner.plan_path()
         controls.init_autonomous_controller()
@@ -85,10 +93,12 @@ while config.robot.step(config.timestep) != -1:
         print("Setting state to arm manipulation")
         config.robot_state = config.State.GRABBING
 
+    # robot is in stationary position and user can control arm movements
     elif config.robot_state == config.State.GRABBING:
-        manipulator_ik.manualIK()
+        manipulator.manualIK()
         pass
-
+    
+    # allow user to have manual control to reposition the robot
     elif config.robot_state == config.State.REPOSITIONING:
         config.robot_parts["wheel_left_joint"].setVelocity(config.vL)
         config.robot_parts["wheel_right_joint"].setVelocity(config.vR)
@@ -97,6 +107,7 @@ while config.robot.step(config.timestep) != -1:
         mapping.lidarMapper()
         pass
 
+    # no more checkpoints
     elif config.robot_state == config.State.END:
         config.robot_parts["wheel_left_joint"].setVelocity(0)
         config.robot_parts["wheel_right_joint"].setVelocity(0)

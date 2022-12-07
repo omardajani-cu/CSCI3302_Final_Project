@@ -19,7 +19,7 @@ For more details, see comments in code
     - This file is the main thread of execution and is the file that the Tiago Robot has set to the main controller. Based on the robot's state, the file calls upon other files to change the robot behavior. The main loop resides here.
 + helpers.py
     - Contains general functions that are used throughout the program.
-+ manipulator_ik.py
++ manipulator.py
     - IK and manual manipulator combined. This gives user the control to adjust joints of the manipulator as well as providing functionality for the user to choose to use inverse kinematics to navigate the arm to positions.
 + mapping.py
     - Functionality for obtaining lidar readings and robot position and displaying them on a map. When mapping, this file also saves the position and lidar sensor information to a probability map, which is later used for path planning.
@@ -55,4 +55,16 @@ For more details, see comments in code
 
 ## Resources Used
 
+https://github.com/lukicdarkoo/webots-example-visual-tracking/blob/master/controllers/visual_tracker/visual_tracker.py
+    - For color detection
+
+https://gist.github.com/ItsMichal/4a8fcb330d04f2ccba582286344dd9a7
+    - For manipulator IK
+
+https://en.wikipedia.org/wiki/A*_search_algorithm
+    - Route planning
+
+https://www.alanzucconi.com/2017/03/13/positioning-and-trilateration/
+    - Trilateration 
+    
 ## Video Link

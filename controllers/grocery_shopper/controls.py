@@ -63,9 +63,12 @@ def ik_controller():
     config.vL = vL
     config.vR = vR
 
-    # once it reaches waypoints, go to next waypoint
+    
     if rho < DISTANCE_BOUNDS:
+        # once it reaches within a distance of the waypoint, go to next waypoint
         state += 1
+
+        # if the waypoints are done, then continue to the next checkpoint
         if state >= len(config.waypoints) - 1:
             print("++++++++++++++Moving to next checkpoint+++++++++++++++++++")
             config.robot_parts["wheel_left_joint"].setVelocity(0)
@@ -78,12 +81,12 @@ def ik_controller():
             # moving to next checkpoint
             else:
                 config.checkpoint_idx += 1
+                # reroute to compute new waypoints from current position and next checkpoint
                 config.robot_state = config.State.REROUTING
 
 def manual_controller():
     new_max = config.MAX_SPEED/2
     key = config.keyboard.getKey()
-    # print("key " + str(key))
     while(config.keyboard.getKey() != -1): pass
     if key == config.keyboard.LEFT :
         config.vL = -new_max
@@ -101,24 +104,28 @@ def manual_controller():
         config.vL = 0
         config.vR = 0
 
+    # save a checkpoint
     elif key == ord('Q') and config.robot_state == config.State.MAPPING:
         helpers.get_gps_update()
         config.pts.append([config.pose_x, config.pose_y, config.pose_theta])
         print("point saved")
 
+    # go to arm manipulation
     elif key == ord('M'):
         print("Going back to arm manipulation")
         config.robot_state = config.State.GRABBING
 
+    # save all checkpoints and map if in mapping mode or simply restart autonomous navigtation if rerouting
     elif key == ord('P'):
         if config.robot_state == config.State.MAPPING:
-            # You will not use this portion in Part 1 but here's an example for loading saved a numpy array
             print("Beginning autonomous navigation")
             mypath = config.pts
+
             # get rid of duplicate checkpoints
             res = []
             [res.append(x) for x in mypath if x not in res]
             config.CHECKPOINTS = res
+            np.save("checkpoints.npy", res)
             np.save("map.npy",config.probability_map)
             planner.init_configuration_space()
             config.robot_state = config.State.REROUTING

@@ -1,6 +1,6 @@
 """
-Name: config.py
-Description: Initializes robot, sensor, mapping states and defines global constants and other global variables
+Name: trilateration.py
+Description: Code to trilaterate position based on known base stations and noisy GPS measurement
 """
 
 import config
@@ -11,6 +11,7 @@ import math
 import random
 from scipy.optimize import minimize
 
+# Cone positions, used as landmarks or base stations with known coordinates
 LANDMARKS = [[8.93,-5.79],
             [8.93, -2.04],
             [8.93, 2.04],
@@ -30,11 +31,15 @@ LANDMARKS = [[8.93,-5.79],
             [-6.56,3.76],
             [-6.36,7.65]]
 
+# enable lidar for trilateration measurments, this lidar is positioned high above the robot so that none of the obstacles interfere, it will just detect the landmarks 
+# within the lidar sensor range
 def enableSLAMLidar():
     global slam_lidar_0, slam_lidar_1, slam_lidar_0_sensor_readings, slam_lidar_1_sensor_readings
     global slam_lidar_0_offsets, slam_lidar_1_offsets
 
+    # lidar for front 180 view
     slam_lidar_0 = config.robot.getDevice('slam_lidar_0')
+    # lidar for rear 180 view
     slam_lidar_1 = config.robot.getDevice('slam_lidar_1')
 
     slam_lidar_0.enable(config.timestep)
@@ -58,14 +63,19 @@ def enableSLAMLidar():
     a2 = np.linspace(-LIDAR_ANGLE_RANGE, -LIDAR_ANGLE_RANGE/2., int(LIDAR_ANGLE_BINS/2)+1)
     slam_lidar_1_offsets = np.concatenate([a1, a2])
 
+# since the cones are not a single point, this function helps to associate any point detected to the absolute center of a landmark that is known
 def associatePointWithLandmark(pt):
     pt = np.array(pt)
     for l in LANDMARKS:
         l = np.array(l)
         if np.linalg.norm(pt-l) < 1:
             return l
+
+    # otherwise, cannot associate with known landmark
     return [-100,-100]
 
+# gets the landmarks and distances to those landmarks that were detected from the trilateration lidars
+# also draws the cone positions in green on the display overlay when in mapping mode 
 def lidarMapperSLAM():
     global slam_lidar_0, slam_lidar_1, slam_lidar_0_sensor_readings, slam_lidar_1_sensor_readings
     global slam_lidar_0_offsets, slam_lidar_1_offsets
@@ -126,8 +136,8 @@ def lidarMapperSLAM():
 
     return landmarks_detected, distances_detected
 
+# adds noise to GPS measurement
 def initialGuess(x,y):
-
     noise = [random.random(), random.random()]
     noise_sign1 = np.random.randint(2)
     noise_sign2 = np.random.randint(2)
@@ -140,17 +150,16 @@ def initialGuess(x,y):
     predicted_pose = [x + noise_sign1*noise[0],y + noise_sign2*noise[1]]
     return predicted_pose
 
-# adapted from
-# https://www.alanzucconi.com/2017/03/13/positioning-and-trilateration/
+
+# calculates mean squared error from predicted position (x) and given locations and distances from measurements
 def meanSquaredError(x, locations, distances):
-
-
     mse = 0.0
     for location, distance in zip(locations, distances):
         distance_calculated = np.linalg.norm(x-location)
         mse += math.pow(distance_calculated - distance, 2.0)
     return mse / len(distances)
 
+# uses the scipy minimize function to optimize the location based on an initial noisy guess and draws point in blue on the screen
 def findPoint(locations, distances, initial_guess):
     plot = []
     if len(distances) < 1:
@@ -179,7 +188,7 @@ def findPoint(locations, distances, initial_guess):
 
     return plot
 
-
+# main function for getting the location based on trilateration
 def getTrilaterationUpdate():
     helpers.get_gps_update()
     initial_guess = initialGuess(config.pose_x, config.pose_y)

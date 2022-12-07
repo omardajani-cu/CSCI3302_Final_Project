@@ -1,26 +1,17 @@
 """
-Name: config.py
-Description: Initializes robot, sensor, mapping states and defines global constants and other global variables
+Name: mapping.py
+Description: maps lidar measurements for obstacle detection and constructs map of obstacles
 """
 
-# mapping functionality for robot
 import config
 import transformation
 import math
+import helpers
 import trilateration
 
-
-def get_gps_update():
-    config.pose_x = -config.gps.getValues()[0]
-    config.pose_y = -config.gps.getValues()[1]
-    n = config.compass.getValues()
-    config.pose_theta = ((math.atan2(n[0], n[1])))
-
-    # print("(%f, %f, %f)" % (config.pose_x, config.pose_y, config.pose_theta))
-
-
+# function is not actually used, but skeleton code for getting odometry update
 def get_odometry_update():
-    config.pose_x  -= (config.vL+config.vR)/2/config.MAX_SPEED*config.MAX_SPEED_MS*config.timestep/1000.0*math.cos(config.pose_theta)
+    config.pose_x -= (config.vL+config.vR)/2/config.MAX_SPEED*config.MAX_SPEED_MS*config.timestep/1000.0*math.cos(config.pose_theta)
     config.pose_y -= (config.vL+config.vR)/2/config.MAX_SPEED*config.MAX_SPEED_MS*config.timestep/1000.0*math.sin(config.pose_theta)
     config.pose_theta += (config.vR-config.vL)/config.AXLE_LENGTH/config.MAX_SPEED*config.MAX_SPEED_MS*config.timestep/1000.0
 
@@ -32,8 +23,7 @@ def get_odometry_update():
     print("(%f, %f, %f)" % (config.pose_x, config.pose_y, config.pose_theta))
 
 def lidarMapper():
-    get_gps_update()
-
+    helpers.get_gps_update()
     # get_odometry_update() 
     
     config.lidar_sensor_readings = config.lidar.getRangeImage()

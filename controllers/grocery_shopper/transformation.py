@@ -1,6 +1,6 @@
 """
-Name: config.py
-Description: Initializes robot, sensor, mapping states and defines global constants and other global variables
+Name: transformation.py
+Description: helper runctions to translate between world, robot, and map coordinates
 """
 
 import math

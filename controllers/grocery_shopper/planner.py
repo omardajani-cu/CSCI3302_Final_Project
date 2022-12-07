@@ -1,6 +1,6 @@
 """
-Name: config.py
-Description: Initializes robot, sensor, mapping states and defines global constants and other global variables
+Name: planner.py
+Description: uses algorithm to generate waypoints between current position and desired position using the map of obstacles
 """
 
 import config
@@ -8,8 +8,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import transformation
 from scipy.signal import convolve2d
+import helpers
 
-# Adapted pseudocode from https://en.wikipedia.org/wiki/A*_search_algorithm
+
 def h_score(n, goal):
     distance = np.linalg.norm(np.array(n) - np.array(goal))
     return distance
@@ -99,6 +100,7 @@ def init_configuration_space():
     # plt.imshow(np.rot90(m))
     # plt.show()
 
+    # convolve map to generate configuration space by increasing boundary pixels
     convolution = np.full((config.C_SPACE_DIM,config.C_SPACE_DIM), 1)
     convolved_m = convolve2d(m, convolution, mode="same")
     convolved_m = convolved_m > 0
@@ -110,11 +112,15 @@ def init_configuration_space():
 def plan_path():
     world_waypoints = []
 
-    map_start = transformation.world_to_map(-config.gps.getValues()[0], -config.gps.getValues()[1])
+    # use current gps value
+    helpers.get_gps_update()
+    map_start = transformation.world_to_map(config.pose_x, config.pose_y)
+
+    # translate world coordinates to map coordinates
     map_end = transformation.world_to_map(config.CHECKPOINTS[config.checkpoint_idx+1][0], config.CHECKPOINTS[config.checkpoint_idx+1][1])
     map_waypoints = a_star(convolved_m, map_start, map_end)
 
-    # Part 2.4: Turn paths into waypoints and save on disk as path.npy and visualize it    
+    # Turn paths into waypoints and save on disk as path.npy and visualize it    
     for m in map_waypoints:
         wx, wy = transformation.map_to_world(m[0], m[1])
         world_waypoints.append((wx,wy))
