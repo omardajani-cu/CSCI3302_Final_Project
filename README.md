@@ -81,12 +81,10 @@ $ worlds
 
 | Usage   | Links |
 |--------------|-------------|
-| Color detection          | https://github.com/lukicdarkoo/webots-example-visual-tracking/blob/master/controllers/visual_tracker/visual_tracker.py
-|
-| Route planning          | https://en.wikipedia.org/wiki/A*_search_algorithm, https://fab.cba.mit.edu/classes/865.21/topics/path_planning/robotic.html, |
-| Trilateration          |https://www.alanzucconi.com/2017/03/13/positioning-and-trilateration/ |
-| Various localization schemes          | https://github.com/nitinnat/Monte-Carlo-Localization/blob/master/Problem3_4.py, https://atsushisakai.github.io/PythonRobotics/modules/slam/ekf_slam/ekf_slam.html
-|
+| Color detection          | https://github.com/lukicdarkoo/webots-example-visual-tracking/blob/master/controllers/visual_tracker/visual_tracker.py |
+| Route planning          | https://en.wikipedia.org/wiki/A*_search_algorithm, https://fab.cba.mit.edu/classes/865.21/topics/path_planning/robotic.html|
+| Trilateration          | https://www.alanzucconi.com/2017/03/13/positioning-and-trilateration/ |
+| Various localization schemes          | https://github.com/nitinnat/Monte-Carlo-Localization/blob/master/Problem3_4.py, https://atsushisakai.github.io/PythonRobotics/modules/slam/ekf_slam/ekf_slam.html|
 | Inverse Kinematics for manipulator arm          |https://gist.github.com/ItsMichal/4a8fcb330d04f2ccba582286344dd9a7, https://github.com/Phylliade/ikpy|
 
 
