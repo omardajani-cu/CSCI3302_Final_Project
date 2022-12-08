@@ -51,20 +51,22 @@ For more details, see comments in code
     * 18 Cone objects
         * Used as "landmark" objects or base stations in trilateration algorithm. Each has set position over all obstacles in the world so that robot has full sensing ability for these without having to take into consideration FOV blocking by obstacles.
 
-## Process
-
 ## Resources Used
 
 https://github.com/lukicdarkoo/webots-example-visual-tracking/blob/master/controllers/visual_tracker/visual_tracker.py
+
     - For color detection
 
 https://gist.github.com/ItsMichal/4a8fcb330d04f2ccba582286344dd9a7
+
     - For manipulator IK
 
 https://en.wikipedia.org/wiki/A*_search_algorithm
+
     - Route planning
 
 https://www.alanzucconi.com/2017/03/13/positioning-and-trilateration/
+
     - Trilateration 
-    
+
 ## Video Link

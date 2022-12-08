@@ -8,7 +8,7 @@ import numpy as np
 import cv2
 
 # add a checkpoint for images with this threshold of color
-COLOR_THRESHOLD = 1000
+COLOR_THRESHOLD = 300
 
 # convert webots image to opencv usable image
 def get_image_from_camera():

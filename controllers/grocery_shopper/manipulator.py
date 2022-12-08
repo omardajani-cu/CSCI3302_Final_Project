@@ -42,7 +42,7 @@ def initManipulator():
     INITIAL_POSITION = [0.13629112,-0.98848863,0.64669744]
     global DEFAULT_MANIPULATOR_POSITION, BASKET_MOTOR_CONFIG
     DEFAULT_MANIPULATOR_POSITION = [1,1,0]
-    BASKET_MOTOR_CONFIG = [0,0,0,0] + [0.253,0.289,1.500,-0.320,1.283,1.390,1.739] + [0,0,0,0]
+    BASKET_MOTOR_CONFIG = [0,0,0,0, 0.253,0.289,1.500,-0.320,1.283,1.390,1.739, 0,0,0,0]
 
     #### Uncomment below to visualize the manipulator arm with matplotlib
     # ax = matplotlib.pyplot.figure().add_subplot(111, projection='3d')
