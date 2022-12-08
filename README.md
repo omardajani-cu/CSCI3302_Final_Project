@@ -54,6 +54,16 @@ $ worlds
     - grocery.wbt
         - modified wbt file for trilateration and better obstacle detection
 ```
+### Flow of execution
+1. Manual mapping with lidar sensor on robot
+    * CV color recognition is used to add checkpoints on oject detection
+    * User is also able to manually add waypoitns with keyboard press
+2. User is able to go directly from this mode to then auonomously navigate facility using collected checkpoints
+    * If robot gets stuck, user can arrest control from robot to drive it and then re assign control to autonomous controller
+3. When a checkpoint is hit, control is given to the user to manipulate arm
+    * In manipulation mode, user can change to manual drive mode or give control back to autonomous controller to locate to next waypoint
+    * User can use keyboard press to locate to a basket position, use IK to go to a default position, or manually control
+
 ## Changes to .wbt File
 * Additional Sensors
     * onboard_lidar_1
@@ -69,20 +79,17 @@ $ worlds
 
 ## Resources Used
 
-https://github.com/lukicdarkoo/webots-example-visual-tracking/blob/master/controllers/visual_tracker/visual_tracker.py
+| Usage   | Links |
+|--------------|-------------|
+| Color detection          | https://github.com/lukicdarkoo/webots-example-visual-tracking/blob/master/controllers/visual_tracker/visual_tracker.py
+|
+| Route planning          | https://en.wikipedia.org/wiki/A*_search_algorithm, https://fab.cba.mit.edu/classes/865.21/topics/path_planning/robotic.html, |
+| Trilateration          |https://www.alanzucconi.com/2017/03/13/positioning-and-trilateration/ |
+| Various localization schemes          | https://github.com/nitinnat/Monte-Carlo-Localization/blob/master/Problem3_4.py, https://atsushisakai.github.io/PythonRobotics/modules/slam/ekf_slam/ekf_slam.html
+|
+| Inverse Kinematics for manipulator arm          |https://gist.github.com/ItsMichal/4a8fcb330d04f2ccba582286344dd9a7, https://github.com/Phylliade/ikpy|
 
-    - For color detection
-
-https://gist.github.com/ItsMichal/4a8fcb330d04f2ccba582286344dd9a7
-
-    - For manipulator IK
-
-https://en.wikipedia.org/wiki/A*_search_algorithm
-
-    - Route planning
-
-https://www.alanzucconi.com/2017/03/13/positioning-and-trilateration/
-
-    - Trilateration 
 
 ## Video Link
+https://youtu.be/D_7RKOg03ls
+
