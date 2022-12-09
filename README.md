@@ -34,7 +34,7 @@ $ controllers
         + mapping.py
             - Functionality for obtaining lidar readings and robot position and displaying them on a map. When mapping, this file also saves the position and lidar sensor information to a probability map, which is later used for path planning.
         + planner.py
-            - Uses a navigation algorithm and the convolved map from the initial mapping phase to construct a path composed of waypoints. 
+            - Uses a navigation algorithm (RRT*) and the convolved map from the initial mapping phase to construct a path composed of waypoints. 
         + transformation.py
             - Contains functions for translating between map, world, and display coordinate systems.
         + trilateration.py
