@@ -275,10 +275,10 @@ def plan_path():
 
     # translate world coordinates to map coordinates
     map_end = transformation.world_to_map(config.CHECKPOINTS[config.checkpoint_idx+1][0], config.CHECKPOINTS[config.checkpoint_idx+1][1])
-    map_waypoints = a_star(convolved_m, map_start, map_end)
-    print("A* map: " + str(map_waypoints))
+    # map_waypoints = a_star(convolved_m, map_start, map_end)
+    # print("A* map: " + str(map_waypoints))
     map_waypoints = rrt_star(convolved_m, map_start, map_end)
-    print("RRT* = " + str(map_waypoints))
+    # print("RRT* = " + str(map_waypoints))
     # Turn paths into waypoints and save on disk as path.npy and visualize it    
     for m in map_waypoints:
         wx, wy = transformation.map_to_world(m[0], m[1])
